@@ -10,7 +10,6 @@ class Oystercard
 		@balance = balance
 		@entry_station = nil
 		@journeys = []
-
 	end
 
 	def top_up(num)
