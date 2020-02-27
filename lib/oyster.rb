@@ -40,6 +40,6 @@ class OysterCard
 	private 
 
 	def deduct
-		@balance -= 1
+		@balance -= MINIMUM_AMOUNT
 	end
 end
