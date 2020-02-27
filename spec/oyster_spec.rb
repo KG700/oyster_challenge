@@ -3,6 +3,7 @@ require 'oyster'
 describe OysterCard do
 
 let(:entry_station) {double :entry_station}
+let(:exit_station) {double :exit_station}
 
 # In order to use public transport
 # As a customer
@@ -19,6 +20,17 @@ let(:entry_station) {double :entry_station}
 
   it "will fail if you try and top up past the maximum balance allowed, #{OysterCard::MAXIMUM_BALANCE}" do
     expect{subject.top_up(91)}.to raise_error "You cant top up more than #{OysterCard::MAXIMUM_BALANCE} balance"
+  end
+
+  it "journeys to return an empty array" do
+    expect(subject.journeys).to match_array([])
+  end
+
+  it "journeys to return an array of our journeys" do
+    subject.top_up(5)
+    subject.touch_in(entry_station)
+    subject.touch_out(exit_station)
+    expect(subject.journeys).to match_array([{entry: entry_station, exit: exit_station}])
   end
 
 
@@ -55,31 +67,31 @@ end
 
 
 
-describe '#touch_out' do 
+  describe '#touch_out' do
 
-  # This tests are for testing touch_out method.
+    # This tests are for testing touch_out method.
 
-  it { is_expected.to respond_to(:touch_out)}
+    it { is_expected.to respond_to(:touch_out)}
 
-  it 'Finish' do
-    card = OysterCard.new(OysterCard::MINIMUM_AMOUNT)
-    card.touch_in(entry_station)
-    card.touch_out
-    expect(card.in_journey?).to eq(false)
-  end
-
-  it 'will deduct the amount from the oyster card' do
-
-    card = OysterCard.new
-    expect{ card.touch_out }.to change{card.balance }.by -1
+    it 'Finish' do
+      card = OysterCard.new(OysterCard::MINIMUM_AMOUNT)
+      card.touch_in(entry_station)
+      card.touch_out(exit_station)
+      expect(card.in_journey?).to eq(false)
     end
 
-  it 'will converte entry_station to nil' do 
-    subject.top_up(5)
-    subject.touch_in(entry_station)
-    subject.touch_out
-    expect(subject.entry_station).to eq nil
+    it 'will deduct the amount from the oyster card' do
 
-  end 
-end
+      card = OysterCard.new
+      expect{ card.touch_out(exit_station) }.to change{card.balance }.by -1
+      end
+
+    it 'will converte entry_station to nil' do
+      subject.top_up(5)
+      subject.touch_in(entry_station)
+      subject.touch_out(exit_station)
+      expect(subject.entry_station).to eq nil
+
+    end
+  end
 end
