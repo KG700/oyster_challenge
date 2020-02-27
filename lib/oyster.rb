@@ -1,15 +1,15 @@
+require_relative 'journey'
+
 class Oystercard
 
-	attr_reader :balance  , :entry_station, :journeys
+	attr_reader :balance
 
-	DEFAULT_BALANCE = 0
 	MAXIMUM_BALANCE = 90
 	MINIMUM_FARE = 1
 
 	def initialize
-		@balance = balance
-		@entry_station = nil
-		@journeys = []
+		@balance = 0
+		@journeys = Journey.new
 	end
 
 	def top_up(num)
@@ -17,31 +17,28 @@ class Oystercard
 		@balance += num
 	end
 
-	def deduct(num)
-		@balance -= num
-	end
 
 	def touch_in(entry_station)
 
 		fail "You cannot travel as you have less than £#{MINIMUM_FARE}" if @balance < MINIMUM_FARE
-		@entry_station = entry_station
+		@journeys.add_entry_station entry_station
 
 	end
 
 
 	def touch_out(exit_station)
-		deduct
-		@journeys.push({entry: entry_station, exit: exit_station})
-		@entry_station = nil
+		@journeys.add_journey exit_station
+		deduct(@journeys.fare)
+		@journeys.fare_paid
 	end
 
-	def in_journey?
-		!!entry_station
+	def display_journeys
+		@journeys.journeys
 	end
 
 	private
 
-	def deduct
-		@balance -= MINIMUM_FARE
+	def deduct(num)
+		@balance -= num
 	end
 end

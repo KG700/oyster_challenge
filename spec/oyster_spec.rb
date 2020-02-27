@@ -13,9 +13,10 @@ end
     it 'shows me my default balance' do
         subject.instance_variable_defined?(:@balance)
     end
-    it "returns an empty array" do
-      expect(subject.journeys).to match_array([])
-    end
+    # it "returns an empty array" do
+    #   pending "While setting up Journey class: test for object?"
+    #   expect(subject.journeys).to match_array([])
+    # end
   end
 
   describe '#top_up' do
@@ -30,27 +31,22 @@ end
 
   describe '#touch_in' do
     it { is_expected.to respond_to(:touch_in) }
-    it 'start the journey' do
+      it 'start the journey' do
       subject.touch_in(entry_station)
-      expect(subject.in_journey?).to eq true
+      expect(subject.instance_variable_get(:@journeys)).to be_in_journey
     end
     it "if mimimum amount is less than £1 you cannot travel" do
       subject.instance_variable_set(:@balance, 0)
       expect{ subject.touch_in(entry_station) }.to raise_error "You cannot travel as you have less than £#{Oystercard::MINIMUM_FARE}"
     end
-    it 'remembers entry station' do
-      subject.touch_in(entry_station)
-      expect(subject.entry_station).to eq entry_station
-    end
 
   end
 
-  describe '#journeys' do
-    it { is_expected.to respond_to(:in_journey?) }
-    it "journeys to return an array of our journeys" do
+  describe '#display_journeys' do
+    it "returns an array of our journeys" do
       subject.touch_in(entry_station)
       subject.touch_out(exit_station)
-      expect(subject.journeys).to match_array([{entry: entry_station, exit: exit_station}])
+      expect(subject.display_journeys).to match_array([{entry: entry_station, exit: exit_station}])
     end
 
   end
@@ -61,17 +57,12 @@ end
     it 'updates in in_journey to false' do
       subject.touch_in entry_station
       subject.touch_out exit_station
-      expect(subject.in_journey?).to eq(false)
+      expect(subject.instance_variable_get(:@journeys)).to_not be_in_journey
     end
 
     it 'will deduct the amount from the oyster card' do
-      expect{ subject.touch_out exit_station }.to change{subject.balance }.by -1
-    end
-
-    it 'will converte entry_station to nil' do
       subject.touch_in entry_station
-      subject.touch_out exit_station
-      expect(subject.entry_station).to eq nil
+      expect{ subject.touch_out exit_station }.to change{subject.balance }.by -1
     end
 
   end
