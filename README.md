@@ -1,4 +1,1 @@
-# will and rafa are fucking awesome!!
-
-# at this point step 10 is done. And Will is the best english teacher ever!!!!!!.
-# Super nice guy.
+# Karla and Rafa are the best pair team Even! ( and this is not going to change, ever)
